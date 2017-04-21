@@ -1,126 +1,121 @@
 <template>
-	<div class="star" :class="starType">
-    <span v-for="item in itemClasses" :class="item" class="star-item" track-by="$index"></span> 
+  <div class="star" :class="itemSize">
+    <span class="item-star" :class="item" v-for="item in itemClass"></span>
   </div>
 </template>
 
-<script type="text-ecmascript-6">
+<script>
 const LENGTH = 5;
 const CLS_ON = 'on';
 const CLS_HALF = 'half';
 const CLS_OFF = 'off';
 
-  export default {
-    props: {
-      size: {
-        type: Number
-      },
-      score: {
-        type: Number
-      }
+export default {
+  name: 'star',
+  props: {
+    size: {
+      type: Number
     },
-    computed: {
-      starType () {
-        return 'star-' + this.size;
-      },
+    score: {
+      type: Number
+    }
+  },
+  computed: {
+    itemSize () {
+      return 'star-' + this.size;
+    },
+    itemClass() {
+      let result = [];
+      let score = Math.floor(this.score * 2) / 2;// 得分
+      let hasDecimals = (score % 1) !== 0;// 小数是否>=0.5
+      let integer = Math.floor(score);// 得分整数
 
-      itemClasses() {
-        let result = [];
-
-        //分数向下取整
-        let score = Math.floor(this.score * 2) / 2;
-        let hasDecimal = score % 1 !== 0;//是否是小数
-
-        let integer = Math.floor(score);
-        for(let i=0; i < integer; i++) {
-          result.push(CLS_ON);
-        }
-
-        if(hasDecimal) {
-          result.push(CLS_HALF);
-        }
-
-        while(result.length < LENGTH) {
-          result.push(CLS_OFF);
-        }
-
-        return result;
+      for (let i = 0; i < integer; i++) {
+        result.push(CLS_ON);
       }
+      if (hasDecimals) {
+        result.push(CLS_HALF);
+      }
+      while (result.length < LENGTH) {
+        result.push(CLS_OFF);
+      }
+      return result;
     }
   }
+};
 </script>
 
-<style lang="scss">
-	@import "../../common/scss/mixin.scss";
-
+<style lang="less">
   .star {
     font-size: 0;
-    .star-item {
+    text-align: center;
+    .item-star {
       display: inline-block;
-      background-repeat: no-repeat;
+      background-size: cover;
     }
     &.star-48 {
-      .star-item {
-        @include px2rem('width', 40px);
-        @include px2rem('height', 38px);
-        @include px2rem('margin-right', 44px);
-        background-size: cover;
+      height: 1.2rem;
+      line-height: 1.2rem;
+      .item-star {
+        width: 1.0rem;
+        height: 1.0rem;
+        margin-right: 1.0rem;
+        vertical-align: middle;
         &:last-child {
           margin-right: 0;
         }
-
-        &.on{
-          @include bg-image('star48_on');
+        &.on {
+          background-image: url(star48_on@2x.png);
         }
-        &.half{
-          @include bg-image('star48_half');
+        &.half {
+          background-image: url(star48_half@2x.png);
         }
-        &.off{
-          @include bg-image('star48_off');
+        &.off {
+          background-image: url(star48_off@2x.png);
         }
       }
     }
-
     &.star-36 {
-      .star-item {
-        @include px2rem('width', 30px);
-        @include px2rem('height', 30px);
-        @include px2rem('margin-right', 12px);
-        background-size: cover;
+      height: 0.9rem;
+      line-height: 0.9rem;
+      .item-star {
+        width: 0.75rem;
+        height: 0.75rem;
+        margin-right: 0.6rem;
+        vertical-align: middle;
         &:last-child {
           margin-right: 0;
         }
-
-        &.on{
-          @include bg-image('star36_on');
+        &.on {
+          background-image: url(star36_on@2x.png);
         }
-        &.half{
-          @include bg-image('star36_half');
+        &.half {
+          background-image: url(star36_half@2x.png);
         }
-        &.off{
-          @include bg-image('star36_off');
+        &.off {
+          background-image: url(star36_off@2x.png);
         }
       }
     }
-
     &.star-24 {
-      .star-item {
-        @include px2rem('width', 20px);
-        @include px2rem('height', 20px);
-        @include px2rem('margin-right', 6px);
-        background-size: cover;
+      height: 0.6rem;
+      line-height: 0.6rem;
+      .item-star {
+        width: 0.5rem;
+        height: 0.5rem;
+        margin-right: 0.4rem;
+        vertical-align: middle;
         &:last-child {
           margin-right: 0;
         }
-
-        &.on{
-          @include bg-image('star24_on');
+        &.on {
+          background-image: url(star24_on@2x.png);
         }
-        &.half{
-          @include bg-image('star24_half');
+        &.half {
+          background-image: url(star24_half@2x.png);
         }
-        &.off{
-          @include bg-image('star24_off');
+        &.off {
+          background-image: url(star24_off@2x.png);
         }
       }
     }

@@ -11,10 +11,7 @@
           <span class="name">{{seller.name}}</span>
         </h1>
         <div class="delivery">{{seller.description}}/{{seller.deliveryTime}}分钟送达</div>
-        <div class="support" v-if="seller.supports && seller.supports.length">
-          <span class="icon" :class="supportsMap[seller.supports[0].type]"></span>
-          <span class="text">{{seller.supports[0].description}}</span>
-        </div>
+        <supports size="26" v-if="seller.supports && seller.supports.length" :supports="_support"></supports>
       </div>
       <div class="supports-count" v-if="seller.supports" @click="_detailShow">
         <span class="count">{{seller.supports.length}}个</span>
@@ -34,12 +31,41 @@
     </div>
 
     <!-- 详情弹窗 -->
-    <div class="detail-wrapper" v-show="detailShow">11111</div>
+    <transition name="fade">
+      <div class="detail" v-show="detailShow">
+        <div class="detail-wrapper clearfix">
+          <div class="detail-main">
+            <h1 class="main-title">{{seller.name}}</h1>
+            <div class="star-wrapper">
+              <star size="36" :score="seller.score"></star>
+            </div>
+            <div class="division mb" flex="cross:center box:mean">
+              <span class="line" flex-box="1"></span>
+              <span class="title" flex-box="0">优惠信息</span>
+              <span class="line" flex-box="1"></span>
+            </div>
+            <supports size="32" v-if="seller.supports && seller.supports.length" :supports="seller.supports"></supports>
+            <div class="division mt" flex="cross:center box:mean">
+              <span class="line" flex-box="1"></span>
+              <span class="title" flex-box="0">商家公告</span>
+              <span class="line" flex-box="1"></span>
+            </div>
+            <div class="bulletin">
+              <p class="content">{{seller.bulletin}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="detail-close" @click="_detailHide">
+          <i class="icon-close"></i>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
-import { Blur } from 'vux';
+import star from '@/components/star/star';
+import supports from '@/components/supports/supports';
 
 export default {
   name: 'header',
@@ -57,13 +83,22 @@ export default {
   created() {
     this.supportsMap = ['decrease', 'discount', 'guarantee', 'invoice', 'special'];
   },
+  computed: {
+    _support () {
+      return [this.seller.supports[0]];
+    }
+  },
   methods: {
     _detailShow() {
       this.detailShow = true;
+    },
+    _detailHide() {
+      this.detailShow = false;
     }
   },
   components: {
-    Blur
+    star,
+    supports
   }
 };
 </script>
@@ -78,6 +113,7 @@ export default {
       position: relative;
       padding: 1.2rem 2.75rem 0.9rem 1.2rem;
       background: rgba(7,17,27,0.5);
+
       .avatar {
         width: 3.2rem;
         height: 3.2rem;
@@ -115,46 +151,6 @@ export default {
           margin-bottom: 0.5rem;
           line-height: 0.6rem;
           font-size: 0.6rem;
-        }
-        .support {
-          position: relative;
-          padding-left: 0.8rem;
-          .icon {
-            position: absolute;
-            left: 0;
-            top: 0.05rem;
-            width: 0.6rem;
-            height: 0.6rem;
-
-            background-size: cover;
-
-            &.decrease {
-              background-image: url(decrease_1@2x.png);
-            }
-            &.discount {
-              background-image: url(discount_1@2x.png);
-            }
-            &.guarantee {
-              background-image: url(guarantee_1@2x.png);
-            }
-            &.invoice {
-              background-image: url(invoice_1@2x.png);
-            }
-            &.special {
-              background-image: url(special_1@2x.png);
-            }
-          }
-          .text {
-            display: block;
-            width: 100%;
-            font-size: 0.5rem;
-            line-height: 0.65rem;
-            
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 1;
-            overflow: hidden;
-          }
         }
       }
       .supports-count {
@@ -228,9 +224,82 @@ export default {
         height: 100%;
       }
     }
-
-    .detail-wrapper {
-
+    .fade-enter-active, .fade-leave-active {
+      opacity: 1;
+      transition: .5s;
+      background: rgba(7, 17, 27, 0.8);
+    }
+    .fade-enter, .fade-leave-active {
+      opacity: 0;
+      background: rgba(7,17,27,0);
+    }
+    .detail {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 10000;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background: rgba(7, 17, 27, 0.8);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      .detail-wrapper {
+        width: 100%;
+        height: auto;
+        min-height: 100%;
+        .detail-main {
+          padding: 3.2rem 1.8rem;
+        }
+        .main-title {
+          font-size: 0.8rem;
+          line-height: 32px;
+          text-align: center;
+          font-weight: bold;
+          margin-bottom: 0.8rem;
+        }
+        .star-wrapper {
+          margin-bottom: 1.4rem;
+        }
+        .division {
+          height: 0.75rem;
+          .line {
+            height: 1px;
+            background: rgba(255,255,255,0.2);
+          }
+          .title {
+            min-width: 3.9rem;
+            text-align: center;
+            line-height: 0.75rem;
+            font-size: 0.6rem;
+            font-weight: bold;            
+            color: #fff;
+          }
+          &.mt {
+            margin-top: 1.35rem;
+          }
+          &.mb {
+            margin-bottom: 1.25rem;
+          }
+        }
+        .bulletin {
+          padding: 1.2rem 0.6rem;
+          .content {
+            line-height: 1.2rem;
+            font-size: 0.6rem;
+          }
+        }
+      }
+      .detail-close {
+        position: relative;
+        width: 1.6rem;
+        height: 1.6rem;
+        margin: -3.2rem auto 0;
+        text-align: center;
+        font-size: 1.6rem;
+        color: rgba(255,255,255,0.5);
+        clear:both;
+      }
     }
   }
 </style>
